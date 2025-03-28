@@ -5,6 +5,7 @@ import com.example.schedule.dto.response.ScheduleResponseDto;
 import com.example.schedule.entity.Schedule;
 import com.example.schedule.repository.ScheduleRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,5 +32,12 @@ public class ScheduleService {
         }
 
         return scheduleRepository.findAllByUserName(userName).stream().map(ScheduleResponseDto::toDto).toList();
+    }
+
+    public ScheduleResponseDto findById(Long id) {
+
+        Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
+
+        return ScheduleResponseDto.toDto(schedule);
     }
 }
