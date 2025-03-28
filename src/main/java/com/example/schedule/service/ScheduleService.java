@@ -5,9 +5,9 @@ import com.example.schedule.dto.response.ScheduleResponseDto;
 import com.example.schedule.entity.Schedule;
 import com.example.schedule.repository.ScheduleRepository;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +36,17 @@ public class ScheduleService {
 
     public ScheduleResponseDto findById(Long id) {
 
-        Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
+        Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(id);
 
-        return ScheduleResponseDto.toDto(schedule);
+        return ScheduleResponseDto.toDto(findSchedule);
+    }
+
+    @Transactional
+    public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto dto) {
+
+        Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(id);
+        findSchedule.updateSchedule(dto.getUserName(), dto.getTitle(), dto.getContents());
+
+        return ScheduleResponseDto.toDto(findSchedule);
     }
 }
