@@ -7,10 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "schedule")
+@NoArgsConstructor
 public class Schedule extends BaseEntity {
 
     @Id
@@ -25,4 +27,10 @@ public class Schedule extends BaseEntity {
 
     @Column(columnDefinition = "longtext")
     private String contents;
+
+    public Schedule(String userName, String title, String contents) {
+        this.userName = userName;
+        this.title = title;
+        this.contents = contents;
+    }
 }
