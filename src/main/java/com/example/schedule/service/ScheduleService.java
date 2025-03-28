@@ -49,4 +49,11 @@ public class ScheduleService {
 
         return ScheduleResponseDto.toDto(findSchedule);
     }
+
+    public void delete(Long id) {
+
+        Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(id);
+
+        scheduleRepository.delete(findSchedule);
+    }
 }
