@@ -7,6 +7,7 @@ import com.example.schedule.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,15 @@ public class UserService {
     public UserResponseDto findById(Long id) {
 
         User findUser = userRepository.findByIdOrElseThrow(id);
+
+        return UserResponseDto.toDto(findUser);
+    }
+
+    @Transactional
+    public UserResponseDto updateUser(Long id, UserRequestDto dto) {
+
+        User findUser = userRepository.findByIdOrElseThrow(id);
+        findUser.updateUser(dto.getUserName(), dto.getEmail());
 
         return UserResponseDto.toDto(findUser);
     }
