@@ -1,5 +1,7 @@
 package com.example.schedule.controller;
 
+import com.example.schedule.dto.request.DeleteRequestDto;
+import com.example.schedule.dto.request.UpdateUserRequestDto;
 import com.example.schedule.dto.request.UserRequestDto;
 import com.example.schedule.dto.response.UserResponseDto;
 import com.example.schedule.service.UserService;
@@ -42,15 +44,15 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody UserRequestDto dto) {
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequestDto dto) {
 
         return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestBody DeleteRequestDto dto) {
 
-        userService.delete(id);
+        userService.delete(id, dto);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

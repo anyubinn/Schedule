@@ -1,13 +1,17 @@
 package com.example.schedule.service;
 
+import com.example.schedule.dto.request.DeleteRequestDto;
+import com.example.schedule.dto.request.UpdateUserRequestDto;
 import com.example.schedule.dto.request.UserRequestDto;
 import com.example.schedule.dto.response.UserResponseDto;
 import com.example.schedule.entity.User;
 import com.example.schedule.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -36,17 +40,26 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto updateUser(Long id, UserRequestDto dto) {
+    public UserResponseDto updateUser(Long id, UpdateUserRequestDto dto) {
 
         User findUser = userRepository.findByIdOrElseThrow(id);
-        findUser.updateUser(dto.getUserName(), dto.getEmail(), dto.getPassword());
+
+        if (!findUser.getPassword().equals(dto.getOldPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
+
+        findUser.updateUser(dto.getUserName(), dto.getEmail(), dto.getNewPassword());
 
         return UserResponseDto.toDto(findUser);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, DeleteRequestDto dto) {
 
         User findUser = userRepository.findByIdOrElseThrow(id);
+
+        if (!findUser.getPassword().equals(dto.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
 
         userRepository.delete(findUser);
     }

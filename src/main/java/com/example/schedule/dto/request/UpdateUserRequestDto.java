@@ -5,13 +5,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ScheduleRequestDto {
+public class UpdateUserRequestDto {
 
     private final String userName;
 
-    private final String title;
+    private final String email;
 
-    private final String contents;
+    private final String oldPassword;
 
-    private final String password;
+    private final String newPassword;
 }
