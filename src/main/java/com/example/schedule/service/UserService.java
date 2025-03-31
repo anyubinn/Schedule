@@ -17,7 +17,7 @@ public class UserService {
 
     public UserResponseDto save(UserRequestDto dto) {
 
-        User user = new User(dto.getUserName(), dto.getEmail());
+        User user = new User(dto.getUserName(), dto.getEmail(), dto.getPassword());
         User savedUser = userRepository.save(user);
 
         return UserResponseDto.toDto(savedUser);
@@ -39,7 +39,7 @@ public class UserService {
     public UserResponseDto updateUser(Long id, UserRequestDto dto) {
 
         User findUser = userRepository.findByIdOrElseThrow(id);
-        findUser.updateUser(dto.getUserName(), dto.getEmail());
+        findUser.updateUser(dto.getUserName(), dto.getEmail(), dto.getPassword());
 
         return UserResponseDto.toDto(findUser);
     }
