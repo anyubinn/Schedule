@@ -26,4 +26,11 @@ public class UserService {
 
         return userRepository.findAll().stream().map(UserResponseDto::toDto).toList();
     }
+
+    public UserResponseDto findById(Long id) {
+
+        User findUser = userRepository.findByIdOrElseThrow(id);
+
+        return UserResponseDto.toDto(findUser);
+    }
 }
