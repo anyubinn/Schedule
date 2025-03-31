@@ -8,7 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    List<Schedule> findAllByUserName(String userName);
+    List<Schedule> findAllByUser_UserName(String userName);
 
     default Schedule findByIdOrElseThrow(Long id) {
 

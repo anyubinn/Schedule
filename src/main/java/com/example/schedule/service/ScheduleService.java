@@ -20,7 +20,7 @@ public class ScheduleService {
 
     public ScheduleResponseDto save(ScheduleRequestDto dto) {
 
-        User findUser = userRepository.findUserByUserName(dto.getUserName());
+        User findUser = userRepository.findByUserName(dto.getUserName());
 
         Schedule schedule = new Schedule(findUser, dto.getTitle(), dto.getContents());
         Schedule savedSchedule = scheduleRepository.save(schedule);
@@ -35,7 +35,7 @@ public class ScheduleService {
             return scheduleRepository.findAll().stream().map(ScheduleResponseDto::toDto).toList();
         }
 
-        return scheduleRepository.findAllByUserName(userName).stream().map(ScheduleResponseDto::toDto).toList();
+        return scheduleRepository.findAllByUser_UserName(userName).stream().map(ScheduleResponseDto::toDto).toList();
     }
 
     public ScheduleResponseDto findById(Long id) {

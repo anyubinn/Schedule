@@ -29,7 +29,7 @@ public class Schedule extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
 
     public Schedule(User user, String title, String contents) {
         this.user = user;
