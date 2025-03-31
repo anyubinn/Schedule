@@ -23,7 +23,7 @@ public class ScheduleResponseDto {
 
     public static ScheduleResponseDto toDto(Schedule schedule) {
 
-        return new ScheduleResponseDto(schedule.getId(), schedule.getUserName(), schedule.getTitle(),
+        return new ScheduleResponseDto(schedule.getId(), schedule.getUser().getUserName(), schedule.getTitle(),
                 schedule.getContents(), schedule.getCreatedAt(), schedule.getUpdatedAt());
     }
 }

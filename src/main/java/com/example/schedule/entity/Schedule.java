@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,22 +22,22 @@ public class Schedule extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String userName;
-
-    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "longtext")
     private String contents;
 
-    public Schedule(String userName, String title, String contents) {
-        this.userName = userName;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
+
+    public Schedule(User user, String title, String contents) {
+        this.user = user;
         this.title = title;
         this.contents = contents;
     }
 
-    public void updateSchedule(String userName, String title, String contents) {
-        this.userName = userName;
+    public void updateSchedule(String title, String contents) {
         this.title = title;
         this.contents = contents;
     }
