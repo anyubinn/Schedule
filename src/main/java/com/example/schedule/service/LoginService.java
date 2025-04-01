@@ -27,4 +27,13 @@ public class LoginService {
 
         return true;
     }
+
+    public void logout(HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            session.invalidate();
+        }
+    }
 }

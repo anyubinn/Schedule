@@ -22,4 +22,12 @@ public class LoginController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest httpServletRequest) {
+
+        loginService.logout(httpServletRequest);
+
+        return ResponseEntity.ok().build();
+    }
 }
