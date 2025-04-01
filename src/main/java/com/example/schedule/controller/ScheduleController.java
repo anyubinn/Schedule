@@ -6,6 +6,7 @@ import com.example.schedule.dto.request.UpdateScheduleRequestDto;
 import com.example.schedule.dto.response.ScheduleResponseDto;
 import com.example.schedule.service.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<ScheduleResponseDto> save(@RequestBody ScheduleRequestDto dto, HttpServletRequest request) {
+    public ResponseEntity<ScheduleResponseDto> save(@Valid @RequestBody ScheduleRequestDto dto, HttpServletRequest request) {
 
         return new ResponseEntity<>(scheduleService.save(dto, request), HttpStatus.CREATED);
     }

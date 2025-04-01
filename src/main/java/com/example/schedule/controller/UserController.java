@@ -5,6 +5,7 @@ import com.example.schedule.dto.request.UpdateUserRequestDto;
 import com.example.schedule.dto.request.UserRequestDto;
 import com.example.schedule.dto.response.UserResponseDto;
 import com.example.schedule.service.UserService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDto> save(@RequestBody UserRequestDto dto) {
+    public ResponseEntity<UserResponseDto> save(@Valid @RequestBody UserRequestDto dto) {
 
         return new ResponseEntity<>(userService.save(dto), HttpStatus.CREATED);
     }

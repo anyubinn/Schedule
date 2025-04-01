@@ -3,6 +3,7 @@ package com.example.schedule.controller;
 import com.example.schedule.dto.request.LoginRequestDto;
 import com.example.schedule.service.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,7 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequestDto dto, HttpServletRequest request) {
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDto dto, HttpServletRequest request) {
 
         loginService.login(dto, request);
 
