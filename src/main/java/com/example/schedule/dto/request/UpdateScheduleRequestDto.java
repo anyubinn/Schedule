@@ -10,6 +10,4 @@ public class UpdateScheduleRequestDto {
     private final String title;
 
     private final String contents;
-
-    private final String password;
 }

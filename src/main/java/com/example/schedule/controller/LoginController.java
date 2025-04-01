@@ -16,17 +16,17 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequestDto dto, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Void> login(@RequestBody LoginRequestDto dto, HttpServletRequest request) {
 
-        loginService.login(dto, httpServletRequest);
+        loginService.login(dto, request);
 
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
 
-        loginService.logout(httpServletRequest);
+        loginService.logout(request);
 
         return ResponseEntity.ok().build();
     }

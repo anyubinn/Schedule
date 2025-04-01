@@ -8,6 +8,8 @@ import com.example.schedule.entity.Schedule;
 import com.example.schedule.entity.User;
 import com.example.schedule.repository.ScheduleRepository;
 import com.example.schedule.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,13 +24,9 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
 
-    public ScheduleResponseDto save(ScheduleRequestDto dto) {
+    public ScheduleResponseDto save(ScheduleRequestDto dto, HttpServletRequest request) {
 
-        User findUser = userRepository.findByUserName(dto.getUserName());
-
-        if (!findUser.getPassword().equals(dto.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
-        }
+        User findUser = isLoggedIn(request);
 
         Schedule schedule = new Schedule(findUser, dto.getTitle(), dto.getContents());
         Schedule savedSchedule = scheduleRepository.save(schedule);
@@ -54,12 +52,13 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ScheduleResponseDto updateSchedule(Long id, UpdateScheduleRequestDto dto) {
+    public ScheduleResponseDto updateSchedule(Long id, UpdateScheduleRequestDto dto, HttpServletRequest request) {
 
         Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(id);
+        User findUser = isLoggedIn(request);
 
-        if (!findSchedule.getUser().getPassword().equals(dto.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        if (findSchedule.getUser().getId() != findUser.getId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 일정 작성자만 수정이 가능합니다.");
         }
 
         findSchedule.updateSchedule(dto.getTitle(), dto.getContents());
@@ -67,14 +66,24 @@ public class ScheduleService {
         return ScheduleResponseDto.toDto(findSchedule);
     }
 
-    public void delete(Long id, DeleteRequestDto dto) {
+    public void delete(Long id, HttpServletRequest request) {
 
         Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(id);
+        User findUser = isLoggedIn(request);
 
-        if (!findSchedule.getUser().getPassword().equals(dto.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        if (findSchedule.getUser().getId() != findUser.getId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 일정 작성자만 삭제가 가능합니다.");
         }
 
         scheduleRepository.delete(findSchedule);
+    }
+
+    private User isLoggedIn(HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+
+        String email = (String) session.getAttribute("sessionKey");
+
+        return userRepository.findByEmailOrElseThrow(email);
     }
 }

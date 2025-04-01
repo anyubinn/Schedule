@@ -6,7 +6,9 @@ import com.example.schedule.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -14,18 +16,16 @@ public class LoginService {
 
     private final UserRepository userRepository;
 
-    public boolean login(LoginRequestDto dto, HttpServletRequest request) {
+    public void login(LoginRequestDto dto, HttpServletRequest request) {
 
         User findUser = userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
 
         if (findUser == null) {
-            return false;
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
         HttpSession session = request.getSession(true);
         session.setAttribute("sessionKey", dto.getEmail());
-
-        return true;
     }
 
     public void logout(HttpServletRequest request) {
