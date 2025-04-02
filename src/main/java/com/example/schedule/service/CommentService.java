@@ -32,6 +32,14 @@ public class CommentService {
         return CommentResponseDto.toDto(saveComment);
     }
 
+    public CommentResponseDto findById(Long scheduleId, Long commentId) {
+
+        Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(scheduleId);
+        Comment findComment = commentRepository.findByIdAndScheduleIdOrElseThrow(commentId, scheduleId);
+
+        return CommentResponseDto.toDto(findComment);
+    }
+
     private User isLoggedIn(HttpServletRequest request) {
 
         HttpSession session = request.getSession(false);

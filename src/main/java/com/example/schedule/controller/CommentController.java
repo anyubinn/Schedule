@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,5 +26,11 @@ public class CommentController {
                                                    HttpServletRequest request) {
 
         return new ResponseEntity<>(commentService.save(scheduleId, dto, request), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{commentId}")
+    public ResponseEntity<CommentResponseDto> findById(@PathVariable Long scheduleId, @PathVariable Long commentId) {
+
+        return ResponseEntity.ok(commentService.findById(scheduleId, commentId));
     }
 }
