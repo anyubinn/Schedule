@@ -61,12 +61,10 @@ public class CommentService {
     public CommentResponseDto updateComment(Long scheduleId, Long commentId, UpdateCommentRequestDto dto,
                                             HttpServletRequest request) {
 
-        scheduleRepository.findByIdOrElseThrow(scheduleId);
         User findUser = isLoggedIn(request);
-        Comment findComment = commentRepository.findByIdAndScheduleIdOrElseThrow(commentId,
-                scheduleId);
+        Comment findComment = isUserForbidden(findUser, scheduleId, commentId);
 
-        if (findComment.getUser().getId() != findUser.getId()) {
+        if (findComment == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 댓글 작성자만 수정이 가능합니다.");
         }
 
@@ -77,11 +75,10 @@ public class CommentService {
 
     public void delete(Long scheduleId, Long commentId, HttpServletRequest request) {
 
-        scheduleRepository.findByIdOrElseThrow(scheduleId);
         User findUser = isLoggedIn(request);
-        Comment findComment = commentRepository.findByIdAndScheduleIdOrElseThrow(commentId, scheduleId);
+        Comment findComment = isUserForbidden(findUser, scheduleId, commentId);
 
-        if (findComment.getUser().getId() != findUser.getId()) {
+        if (findComment == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 댓글 작성자만 삭제가 가능합니다.");
         }
 
@@ -95,5 +92,17 @@ public class CommentService {
         String email = (String) session.getAttribute("sessionKey");
 
         return userRepository.findByEmailOrElseThrow(email);
+    }
+
+    private Comment isUserForbidden(User user, Long scheduleId, Long commentId) {
+
+        scheduleRepository.findByIdOrElseThrow(scheduleId);
+        Comment findComment = commentRepository.findByIdAndScheduleIdOrElseThrow(commentId, scheduleId);
+
+        if (findComment.getUser().getId() != user.getId()) {
+            return null;
+        }
+
+        return findComment;
     }
 }
