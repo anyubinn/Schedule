@@ -1,5 +1,6 @@
 package com.example.schedule.handler;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,5 +37,17 @@ public class GlobalExceptionHandler {
         errors.put("error", exception.getReason());
 
         return ResponseEntity.status(exception.getStatusCode()).body(errors);
+    }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException exception) {
+
+        Map<String, Object> errors = new HashMap<>();
+        errors.put("timestamp", LocalDateTime.now());
+        errors.put("status", HttpStatus.CONFLICT.value());
+        errors.put("error", HttpStatus.CONFLICT.getReasonPhrase());
+        errors.put("message", exception.getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
     }
 }
