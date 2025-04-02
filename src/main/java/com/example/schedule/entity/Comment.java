@@ -29,4 +29,10 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
+
+    public Comment(User user, Schedule schedule, String contents) {
+        this.user = user;
+        this.schedule = schedule;
+        this.contents = contents;
+    }
 }

@@ -15,9 +15,9 @@ public class UserResponseDto {
 
     private final String email;
 
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt;
+    private final LocalDateTime updatedAt;
 
     public static UserResponseDto toDto(User user) {
 
