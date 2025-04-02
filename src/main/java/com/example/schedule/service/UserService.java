@@ -1,5 +1,6 @@
 package com.example.schedule.service;
 
+import com.example.schedule.config.PasswordEncoder;
 import com.example.schedule.dto.request.UpdateUserRequestDto;
 import com.example.schedule.dto.request.UserRequestDto;
 import com.example.schedule.dto.response.UserResponseDto;
@@ -19,10 +20,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserResponseDto save(UserRequestDto dto) {
 
-        User user = new User(dto.getUserName(), dto.getEmail(), dto.getPassword());
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+        User user = new User(dto.getUserName(), dto.getEmail(), encodedPassword);
         User savedUser = userRepository.save(user);
 
         return UserResponseDto.toDto(savedUser);

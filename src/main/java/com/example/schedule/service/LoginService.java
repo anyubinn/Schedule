@@ -1,5 +1,6 @@
 package com.example.schedule.service;
 
+import com.example.schedule.config.PasswordEncoder;
 import com.example.schedule.dto.request.LoginRequestDto;
 import com.example.schedule.entity.User;
 import com.example.schedule.repository.UserRepository;
@@ -15,13 +16,14 @@ import org.springframework.web.server.ResponseStatusException;
 public class LoginService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public void login(LoginRequestDto dto, HttpServletRequest request) {
 
-        User findUser = userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
+        User findUser = userRepository.findByEmailOrElseThrow(dto.getEmail());
 
-        if (findUser == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(dto.getPassword(), findUser.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
         HttpSession session = request.getSession(true);
