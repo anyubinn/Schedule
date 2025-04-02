@@ -1,6 +1,7 @@
 package com.example.schedule.controller;
 
 import com.example.schedule.dto.request.CommentRequestDto;
+import com.example.schedule.dto.request.UpdateCommentRequestDto;
 import com.example.schedule.dto.response.CommentResponseDto;
 import com.example.schedule.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,5 +43,13 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> findById(@PathVariable Long scheduleId, @PathVariable Long commentId) {
 
         return ResponseEntity.ok(commentService.findById(scheduleId, commentId));
+    }
+
+    @PutMapping("/{commentId}")
+    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long scheduleId, @PathVariable Long commentId,
+                                                            @RequestBody UpdateCommentRequestDto dto,
+                                                            HttpServletRequest request) {
+
+        return ResponseEntity.ok(commentService.updateComment(scheduleId, commentId, dto, request));
     }
 }
