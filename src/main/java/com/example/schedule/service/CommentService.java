@@ -10,6 +10,7 @@ import com.example.schedule.repository.ScheduleRepository;
 import com.example.schedule.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +33,21 @@ public class CommentService {
         return CommentResponseDto.toDto(saveComment);
     }
 
+    public List<CommentResponseDto> findAll(Long scheduleId, String userName) {
+
+        if (userName == null) {
+
+            return commentRepository.findAllByScheduleId(scheduleId).stream().map(CommentResponseDto::toDto).toList();
+        }
+
+        scheduleRepository.findByIdOrElseThrow(scheduleId);
+
+        return commentRepository.findAllByScheduleIdAndUser_UserName(scheduleId, userName).stream().map(CommentResponseDto::toDto).toList();
+    }
+
     public CommentResponseDto findById(Long scheduleId, Long commentId) {
 
-        Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(scheduleId);
+        scheduleRepository.findByIdOrElseThrow(scheduleId);
         Comment findComment = commentRepository.findByIdAndScheduleIdOrElseThrow(commentId, scheduleId);
 
         return CommentResponseDto.toDto(findComment);
