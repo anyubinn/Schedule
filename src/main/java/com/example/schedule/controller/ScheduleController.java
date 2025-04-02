@@ -1,6 +1,5 @@
 package com.example.schedule.controller;
 
-import com.example.schedule.dto.request.DeleteRequestDto;
 import com.example.schedule.dto.request.ScheduleRequestDto;
 import com.example.schedule.dto.request.UpdateScheduleRequestDto;
 import com.example.schedule.dto.response.ScheduleResponseDto;

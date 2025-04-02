@@ -1,10 +1,10 @@
 package com.example.schedule.controller;
 
-import com.example.schedule.dto.request.DeleteRequestDto;
 import com.example.schedule.dto.request.UpdateUserRequestDto;
 import com.example.schedule.dto.request.UserRequestDto;
 import com.example.schedule.dto.response.UserResponseDto;
 import com.example.schedule.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -45,16 +45,16 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequestDto dto) {
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequestDto dto, HttpServletRequest request) {
 
-        return ResponseEntity.ok(userService.updateUser(id, dto));
+        return ResponseEntity.ok(userService.updateUser(id, dto, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestBody DeleteRequestDto dto) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, HttpServletRequest request) {
 
-        userService.delete(id, dto);
+        userService.delete(id, request);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,11 +1,12 @@
 package com.example.schedule.service;
 
-import com.example.schedule.dto.request.DeleteRequestDto;
 import com.example.schedule.dto.request.UpdateUserRequestDto;
 import com.example.schedule.dto.request.UserRequestDto;
 import com.example.schedule.dto.response.UserResponseDto;
 import com.example.schedule.entity.User;
 import com.example.schedule.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,27 +41,38 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto updateUser(Long id, UpdateUserRequestDto dto) {
+    public UserResponseDto updateUser(Long id, UpdateUserRequestDto dto, HttpServletRequest request) {
 
         User findUser = userRepository.findByIdOrElseThrow(id);
+        User loginUser = isLoggedIn(request);
 
-        if (!findUser.getPassword().equals(dto.getOldPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        if (findUser.getId() != loginUser.getId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 유저만 수정이 가능합니다.");
         }
 
-        findUser.updateUser(dto.getUserName(), dto.getEmail(), dto.getNewPassword());
+        findUser.updateUser(dto.getUserName());
 
         return UserResponseDto.toDto(findUser);
     }
 
-    public void delete(Long id, DeleteRequestDto dto) {
+    public void delete(Long id, HttpServletRequest request) {
 
         User findUser = userRepository.findByIdOrElseThrow(id);
+        User loginUser = isLoggedIn(request);
 
-        if (!findUser.getPassword().equals(dto.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        if (findUser.getId() != loginUser.getId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 유저만 삭제가 가능합니다.");
         }
 
         userRepository.delete(findUser);
+    }
+
+    private User isLoggedIn(HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+
+        String email = (String) session.getAttribute("sessionKey");
+
+        return userRepository.findByEmailOrElseThrow(email);
     }
 }

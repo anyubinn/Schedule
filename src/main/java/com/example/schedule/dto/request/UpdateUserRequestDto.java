@@ -8,10 +8,4 @@ import lombok.Getter;
 public class UpdateUserRequestDto {
 
     private final String userName;
-
-    private final String email;
-
-    private final String oldPassword;
-
-    private final String newPassword;
 }
