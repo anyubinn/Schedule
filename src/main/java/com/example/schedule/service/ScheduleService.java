@@ -25,7 +25,7 @@ public class ScheduleService {
 
     public ScheduleResponseDto save(ScheduleRequestDto dto, HttpServletRequest request) {
 
-        User findUser = isLoggedIn(request);
+        User findUser = validateLoggedIn(request);
 
         Schedule schedule = new Schedule(findUser, dto.getTitle(), dto.getContents());
         Schedule savedSchedule = scheduleRepository.save(schedule);
@@ -53,12 +53,8 @@ public class ScheduleService {
     @Transactional
     public ScheduleResponseDto updateSchedule(Long id, UpdateScheduleRequestDto dto, HttpServletRequest request) {
 
-        Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(id);
-        User findUser = isLoggedIn(request);
-
-        if (findSchedule.getUser().getId() != findUser.getId()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 일정 작성자만 수정이 가능합니다.");
-        }
+        User findUser = validateLoggedIn(request);
+        Schedule findSchedule = validateUserAuth(findUser, id);
 
         findSchedule.updateSchedule(dto.getTitle(), dto.getContents());
 
@@ -67,22 +63,29 @@ public class ScheduleService {
 
     public void delete(Long id, HttpServletRequest request) {
 
-        Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(id);
-        User findUser = isLoggedIn(request);
-
-        if (findSchedule.getUser().getId() != findUser.getId()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 일정 작성자만 삭제가 가능합니다.");
-        }
+        User findUser = validateLoggedIn(request);
+        Schedule findSchedule = validateUserAuth(findUser, id);
 
         scheduleRepository.delete(findSchedule);
     }
 
-    private User isLoggedIn(HttpServletRequest request) {
+    private User validateLoggedIn(HttpServletRequest request) {
 
         HttpSession session = request.getSession(false);
 
         String email = (String) session.getAttribute("sessionKey");
 
         return userRepository.findByEmailOrElseThrow(email);
+    }
+
+    private Schedule validateUserAuth(User user, Long id) {
+
+        Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(id);
+
+        if (findSchedule.getUser().getId() != user.getId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 일정 작성자만 수정/삭제가 가능합니다.");
+        }
+
+        return findSchedule;
     }
 }

@@ -28,7 +28,7 @@ public class CommentService {
 
     public CommentResponseDto save(Long scheduleId, CommentRequestDto dto, HttpServletRequest request) {
 
-        User findUser = isLoggedIn(request);
+        User findUser = validateLoggedIn(request);
         Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(scheduleId);
 
         Comment comment = new Comment(findUser, findSchedule, dto.getContents());
@@ -61,12 +61,8 @@ public class CommentService {
     public CommentResponseDto updateComment(Long scheduleId, Long commentId, UpdateCommentRequestDto dto,
                                             HttpServletRequest request) {
 
-        User findUser = isLoggedIn(request);
-        Comment findComment = isUserForbidden(findUser, scheduleId, commentId);
-
-        if (findComment == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 댓글 작성자만 수정이 가능합니다.");
-        }
+        User findUser = validateLoggedIn(request);
+        Comment findComment = validateUserAuth(findUser, scheduleId, commentId);
 
         findComment.updateComment(dto.getContents());
 
@@ -75,17 +71,13 @@ public class CommentService {
 
     public void delete(Long scheduleId, Long commentId, HttpServletRequest request) {
 
-        User findUser = isLoggedIn(request);
-        Comment findComment = isUserForbidden(findUser, scheduleId, commentId);
-
-        if (findComment == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 댓글 작성자만 삭제가 가능합니다.");
-        }
+        User findUser = validateLoggedIn(request);
+        Comment findComment = validateUserAuth(findUser, scheduleId, commentId);
 
         commentRepository.delete(findComment);
     }
 
-    private User isLoggedIn(HttpServletRequest request) {
+    private User validateLoggedIn(HttpServletRequest request) {
 
         HttpSession session = request.getSession(false);
 
@@ -94,13 +86,13 @@ public class CommentService {
         return userRepository.findByEmailOrElseThrow(email);
     }
 
-    private Comment isUserForbidden(User user, Long scheduleId, Long commentId) {
+    private Comment validateUserAuth(User user, Long scheduleId, Long commentId) {
 
         scheduleRepository.findByIdOrElseThrow(scheduleId);
         Comment findComment = commentRepository.findByIdAndScheduleIdOrElseThrow(commentId, scheduleId);
 
         if (findComment.getUser().getId() != user.getId()) {
-            return null;
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 댓글 작성자만 수정/삭제가 가능합니다.");
         }
 
         return findComment;

@@ -46,12 +46,8 @@ public class UserService {
     @Transactional
     public UserResponseDto updateUser(Long id, UpdateUserRequestDto dto, HttpServletRequest request) {
 
-        User findUser = userRepository.findByIdOrElseThrow(id);
-        User loginUser = isLoggedIn(request);
-
-        if (findUser.getId() != loginUser.getId()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 유저만 수정이 가능합니다.");
-        }
+        User loginUser = validateLoggedIn(request);
+        User findUser = validateUserAuth(loginUser, id);
 
         findUser.updateUser(dto.getUserName());
 
@@ -60,22 +56,29 @@ public class UserService {
 
     public void delete(Long id, HttpServletRequest request) {
 
-        User findUser = userRepository.findByIdOrElseThrow(id);
-        User loginUser = isLoggedIn(request);
-
-        if (findUser.getId() != loginUser.getId()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 유저만 삭제가 가능합니다.");
-        }
+        User loginUser = validateLoggedIn(request);
+        User findUser = validateUserAuth(loginUser, id);
 
         userRepository.delete(findUser);
     }
 
-    private User isLoggedIn(HttpServletRequest request) {
+    private User validateLoggedIn(HttpServletRequest request) {
 
         HttpSession session = request.getSession(false);
 
         String email = (String) session.getAttribute("sessionKey");
 
         return userRepository.findByEmailOrElseThrow(email);
+    }
+
+    private User validateUserAuth(User user, Long id) {
+
+        User findUser = userRepository.findByIdOrElseThrow(id);
+
+        if (findUser.getId() != user.getId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 유저만 수정/삭제가 가능합니다.");
+        }
+
+        return findUser;
     }
 }
