@@ -39,12 +39,12 @@ public class CommentService {
 
     public List<CommentResponseDto> findAll(Long scheduleId, String userName) {
 
+        scheduleRepository.findByIdOrElseThrow(scheduleId);
+
         if (userName == null) {
 
             return commentRepository.findAllByScheduleId(scheduleId).stream().map(CommentResponseDto::toDto).toList();
         }
-
-        scheduleRepository.findByIdOrElseThrow(scheduleId);
 
         return commentRepository.findAllByScheduleIdAndUser_UserName(scheduleId, userName).stream().map(CommentResponseDto::toDto).toList();
     }
