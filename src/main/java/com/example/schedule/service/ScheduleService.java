@@ -2,9 +2,11 @@ package com.example.schedule.service;
 
 import com.example.schedule.dto.request.ScheduleRequestDto;
 import com.example.schedule.dto.request.UpdateScheduleRequestDto;
+import com.example.schedule.dto.response.ReadScheduleResponseDto;
 import com.example.schedule.dto.response.ScheduleResponseDto;
 import com.example.schedule.entity.Schedule;
 import com.example.schedule.entity.User;
+import com.example.schedule.repository.CommentRepository;
 import com.example.schedule.repository.ScheduleRepository;
 import com.example.schedule.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +26,7 @@ public class ScheduleService {
 
     private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
+    private final CommentRepository commentRepository;
 
     public ScheduleResponseDto save(ScheduleRequestDto dto, HttpServletRequest request) {
 
@@ -35,21 +38,28 @@ public class ScheduleService {
         return ScheduleResponseDto.toDto(savedSchedule);
     }
 
-    public Page<ScheduleResponseDto> findAll(String userName, Pageable pageable) {
+    public Page<ReadScheduleResponseDto> findAll(String userName, Pageable pageable) {
+
+        Page<Schedule> schedules;
 
         if (userName == null) {
-
-            return scheduleRepository.findAll(pageable).map(ScheduleResponseDto::toDto);
+            schedules = scheduleRepository.findAll(pageable);
+        } else {
+            schedules = scheduleRepository.findAllByUser_UserName(userName, pageable);
         }
 
-        return scheduleRepository.findAllByUser_UserName(userName, pageable).map(ScheduleResponseDto::toDto);
+        return schedules.map(schedule -> {
+            int commentCount = commentRepository.countCommentByScheduleId(schedule.getId());
+            return ReadScheduleResponseDto.toDto(schedule, commentCount);
+        });
     }
 
-    public ScheduleResponseDto findById(Long id) {
+    public ReadScheduleResponseDto findById(Long id) {
 
         Schedule findSchedule = scheduleRepository.findByIdOrElseThrow(id);
+        int commentCount = commentRepository.countCommentByScheduleId(findSchedule.getId());
 
-        return ScheduleResponseDto.toDto(findSchedule);
+        return ReadScheduleResponseDto.toDto(findSchedule, commentCount);
     }
 
     @Transactional

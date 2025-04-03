@@ -2,6 +2,7 @@ package com.example.schedule.controller;
 
 import com.example.schedule.dto.request.ScheduleRequestDto;
 import com.example.schedule.dto.request.UpdateScheduleRequestDto;
+import com.example.schedule.dto.response.ReadScheduleResponseDto;
 import com.example.schedule.dto.response.ScheduleResponseDto;
 import com.example.schedule.service.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,7 +38,7 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ScheduleResponseDto>> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String userName) {
+    public ResponseEntity<Page<ReadScheduleResponseDto>> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String userName) {
 
         Sort sort = Sort.by("updatedAt").descending();
         Pageable pageable = PageRequest.of(page, size, sort);
@@ -45,7 +46,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ScheduleResponseDto> findById(@PathVariable Long id) {
+    public ResponseEntity<ReadScheduleResponseDto> findById(@PathVariable Long id) {
 
         return ResponseEntity.ok(scheduleService.findById(id));
     }
