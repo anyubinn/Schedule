@@ -31,7 +31,7 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> save(@PathVariable Long scheduleId, @RequestBody CommentRequestDto dto,
                                                    @ModelAttribute("loginUser") User loginUser) {
 
-        return new ResponseEntity<>(commentService.save(scheduleId, dto, loginUser), HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.save(scheduleId, dto, loginUser));
     }
 
     @GetMapping

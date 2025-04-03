@@ -36,7 +36,7 @@ public class ScheduleController {
     public ResponseEntity<ScheduleResponseDto> save(@Valid @RequestBody ScheduleRequestDto dto,
                                                     @ModelAttribute("loginUser") User loginUser) {
 
-        return new ResponseEntity<>(scheduleService.save(dto, loginUser), HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(dto, loginUser));
     }
 
     @GetMapping
@@ -68,6 +68,6 @@ public class ScheduleController {
 
         scheduleService.delete(id, loginUser);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 }
