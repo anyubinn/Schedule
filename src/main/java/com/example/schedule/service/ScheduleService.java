@@ -8,10 +8,6 @@ import com.example.schedule.entity.Schedule;
 import com.example.schedule.entity.User;
 import com.example.schedule.repository.CommentRepository;
 import com.example.schedule.repository.ScheduleRepository;
-import com.example.schedule.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,15 +20,12 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
     private final CommentRepository commentRepository;
 
-    public ScheduleResponseDto save(ScheduleRequestDto dto, HttpServletRequest request) {
+    public ScheduleResponseDto save(ScheduleRequestDto dto, User loginUser) {
 
-        User findUser = validateLoggedIn(request);
-
-        Schedule schedule = new Schedule(findUser, dto.getTitle(), dto.getContents());
+        Schedule schedule = new Schedule(loginUser, dto.getTitle(), dto.getContents());
         Schedule savedSchedule = scheduleRepository.save(schedule);
 
         return ScheduleResponseDto.toDto(savedSchedule);
@@ -63,31 +56,20 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ScheduleResponseDto updateSchedule(Long id, UpdateScheduleRequestDto dto, HttpServletRequest request) {
+    public ScheduleResponseDto updateSchedule(Long id, UpdateScheduleRequestDto dto, User loginUser) {
 
-        User findUser = validateLoggedIn(request);
-        Schedule findSchedule = validateUserAuth(findUser, id);
+        Schedule findSchedule = validateUserAuth(loginUser, id);
 
         findSchedule.updateSchedule(dto.getTitle(), dto.getContents());
 
         return ScheduleResponseDto.toDto(findSchedule);
     }
 
-    public void delete(Long id, HttpServletRequest request) {
+    public void delete(Long id, User loginUser) {
 
-        User findUser = validateLoggedIn(request);
-        Schedule findSchedule = validateUserAuth(findUser, id);
+        Schedule findSchedule = validateUserAuth(loginUser, id);
 
         scheduleRepository.delete(findSchedule);
-    }
-
-    private User validateLoggedIn(HttpServletRequest request) {
-
-        HttpSession session = request.getSession(false);
-
-        String email = (String) session.getAttribute("sessionKey");
-
-        return userRepository.findByEmailOrElseThrow(email);
     }
 
     private Schedule validateUserAuth(User user, Long id) {

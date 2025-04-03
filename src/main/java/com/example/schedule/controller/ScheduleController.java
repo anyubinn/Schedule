@@ -4,8 +4,8 @@ import com.example.schedule.dto.request.ScheduleRequestDto;
 import com.example.schedule.dto.request.UpdateScheduleRequestDto;
 import com.example.schedule.dto.response.ReadScheduleResponseDto;
 import com.example.schedule.dto.response.ScheduleResponseDto;
+import com.example.schedule.entity.User;
 import com.example.schedule.service.ScheduleService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,13 +33,16 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<ScheduleResponseDto> save(@Valid @RequestBody ScheduleRequestDto dto, HttpServletRequest request) {
+    public ResponseEntity<ScheduleResponseDto> save(@Valid @RequestBody ScheduleRequestDto dto,
+                                                    @ModelAttribute("loginUser") User loginUser) {
 
-        return new ResponseEntity<>(scheduleService.save(dto, request), HttpStatus.CREATED);
+        return new ResponseEntity<>(scheduleService.save(dto, loginUser), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<Page<ReadScheduleResponseDto>> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String userName) {
+    public ResponseEntity<Page<ReadScheduleResponseDto>> findAll(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(required = false) String userName) {
 
         Sort sort = Sort.by("updatedAt").descending();
         Pageable pageable = PageRequest.of(page, size, sort);
@@ -54,15 +58,15 @@ public class ScheduleController {
     @PutMapping("/{id}")
     public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable Long id,
                                                               @RequestBody UpdateScheduleRequestDto dto,
-                                                              HttpServletRequest request) {
+                                                              @ModelAttribute("loginUser") User loginUser) {
 
-        return ResponseEntity.ok(scheduleService.updateSchedule(id, dto, request));
+        return ResponseEntity.ok(scheduleService.updateSchedule(id, dto, loginUser));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, @ModelAttribute("loginUser") User loginUser) {
 
-        scheduleService.delete(id, request);
+        scheduleService.delete(id, loginUser);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

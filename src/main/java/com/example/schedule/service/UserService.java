@@ -6,8 +6,6 @@ import com.example.schedule.dto.request.UserRequestDto;
 import com.example.schedule.dto.response.UserResponseDto;
 import com.example.schedule.entity.User;
 import com.example.schedule.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,9 +42,8 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto updateUser(Long id, UpdateUserRequestDto dto, HttpServletRequest request) {
+    public UserResponseDto updateUser(Long id, UpdateUserRequestDto dto, User loginUser) {
 
-        User loginUser = validateLoggedIn(request);
         User findUser = validateUserAuth(loginUser, id);
 
         findUser.updateUser(dto.getUserName());
@@ -54,21 +51,11 @@ public class UserService {
         return UserResponseDto.toDto(findUser);
     }
 
-    public void delete(Long id, HttpServletRequest request) {
+    public void delete(Long id, User loginUser) {
 
-        User loginUser = validateLoggedIn(request);
         User findUser = validateUserAuth(loginUser, id);
 
         userRepository.delete(findUser);
-    }
-
-    private User validateLoggedIn(HttpServletRequest request) {
-
-        HttpSession session = request.getSession(false);
-
-        String email = (String) session.getAttribute("sessionKey");
-
-        return userRepository.findByEmailOrElseThrow(email);
     }
 
     private User validateUserAuth(User user, Long id) {
