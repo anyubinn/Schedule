@@ -1,14 +1,15 @@
 package com.example.schedule.repository;
 
 import com.example.schedule.entity.Schedule;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    List<Schedule> findAllByUser_UserName(String userName);
+    Page<Schedule> findAllByUser_UserName(String userName, Pageable pageable);
 
     default Schedule findByIdOrElseThrow(Long id) {
 

@@ -6,8 +6,11 @@ import com.example.schedule.dto.response.ScheduleResponseDto;
 import com.example.schedule.service.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,9 +37,11 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ScheduleResponseDto>> findAll(@RequestParam(required = false) String userName) {
+    public ResponseEntity<Page<ScheduleResponseDto>> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String userName) {
 
-        return ResponseEntity.ok(scheduleService.findAll(userName));
+        Sort sort = Sort.by("updatedAt").descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return ResponseEntity.ok(scheduleService.findAll(userName, pageable));
     }
 
     @GetMapping("/{id}")

@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,14 +35,14 @@ public class ScheduleService {
         return ScheduleResponseDto.toDto(savedSchedule);
     }
 
-    public List<ScheduleResponseDto> findAll(String userName) {
+    public Page<ScheduleResponseDto> findAll(String userName, Pageable pageable) {
 
         if (userName == null) {
 
-            return scheduleRepository.findAll().stream().map(ScheduleResponseDto::toDto).toList();
+            return scheduleRepository.findAll(pageable).map(ScheduleResponseDto::toDto);
         }
 
-        return scheduleRepository.findAllByUser_UserName(userName).stream().map(ScheduleResponseDto::toDto).toList();
+        return scheduleRepository.findAllByUser_UserName(userName, pageable).map(ScheduleResponseDto::toDto);
     }
 
     public ScheduleResponseDto findById(Long id) {
