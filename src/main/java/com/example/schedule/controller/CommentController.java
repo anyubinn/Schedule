@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 댓글의 CRUD를 담당하는 컨트롤러
+ */
 @RestController
 @RequestMapping("/schedules/{scheduleId}/comments")
 @RequiredArgsConstructor
@@ -27,6 +30,14 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    /**
+     * 특정 일정에 대한 새로운 댓글을 추가한다.
+     *
+     * @param scheduleId 댓글이 속한 일정 id
+     * @param dto 추가할 댓글 정보를 담고 있는 DTO
+     * @param loginUser 현재 로그인된 유저 정보
+     * @return 생성된 댓글 정보와 HTTP 상태(201 CREATED)
+     */
     @PostMapping
     public ResponseEntity<CommentResponseDto> save(@PathVariable Long scheduleId, @RequestBody CommentRequestDto dto,
                                                    @ModelAttribute("loginUser") User loginUser) {
@@ -34,6 +45,13 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.save(scheduleId, dto, loginUser));
     }
 
+    /**
+     * 특정 일정에 대한 모든 댓글을 조회한다.
+     *
+     * @param scheduleId 댓글이 속한 일정 id
+     * @param userName 검색 기준인 유저명, 필수가 아님
+     * @return 조회된 댓글 리스트 정보와 HTTP 상태(200 OK)
+     */
     @GetMapping
     public ResponseEntity<List<CommentResponseDto>> findAll(@PathVariable Long scheduleId,
                                                             @RequestParam(required = false) String userName) {
@@ -41,12 +59,28 @@ public class CommentController {
         return ResponseEntity.ok(commentService.findAll(scheduleId, userName));
     }
 
+    /**
+     * 특정 일정에 대한 특정 댓글을 조회한다.
+     *
+     * @param scheduleId 댓글이 속한 일정 id
+     * @param commentId 조회할 댓글 id
+     * @return 조회된 댓글 정보와 HTTP 상태(200 OK)
+     */
     @GetMapping("/{commentId}")
     public ResponseEntity<CommentResponseDto> findById(@PathVariable Long scheduleId, @PathVariable Long commentId) {
 
         return ResponseEntity.ok(commentService.findById(scheduleId, commentId));
     }
 
+    /**
+     * 특정 일정에 대한 특정 댓글을 수정한다.
+     *
+     * @param scheduleId 댓글이 속한 일정 id
+     * @param commentId 수정할 댓글 id
+     * @param dto 수정할 댓글 정보를 담고 있는 DTO
+     * @param loginUser 현재 로그인된 유저 정보
+     * @return 수정된 유저 정보와 HTTP 상태(200 OK)
+     */
     @PutMapping("/{commentId}")
     public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long scheduleId, @PathVariable Long commentId,
                                                             @RequestBody UpdateCommentRequestDto dto,
@@ -55,6 +89,14 @@ public class CommentController {
         return ResponseEntity.ok(commentService.updateComment(scheduleId, commentId, dto, loginUser));
     }
 
+    /**
+     * 특정 일정에 대한 특정 댓글을 삭제한다.
+     *
+     * @param scheduleId 댓글이 속한 일정 id
+     * @param commentId 삭제할 댓글 id
+     * @param loginUser 현재 로그인된 유저 정보
+     * @return 삭제 성공 시 HTTP 상태(200 OK)
+     */
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> delete(@PathVariable Long scheduleId, @PathVariable Long commentId,
                                        @ModelAttribute("loginUser") User loginUser) {

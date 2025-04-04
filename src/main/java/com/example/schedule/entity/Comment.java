@@ -11,6 +11,9 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 댓글 정보를 관리하는 엔티티
+ */
 @Getter
 @Entity
 @Table(name = "comment")

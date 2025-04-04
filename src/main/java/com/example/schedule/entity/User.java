@@ -9,6 +9,9 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 유저 정보를 관리하는 엔티티
+ */
 @Getter
 @Entity
 @Table(name = "user")

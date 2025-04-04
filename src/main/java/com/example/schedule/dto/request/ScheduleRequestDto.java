@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * 일정 추가 요청에 사용되는 DTO
+ */
 @Getter
 @AllArgsConstructor
 public class ScheduleRequestDto {

@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * 유저 응답에 사용되는 DTO
+ */
 @Getter
 @AllArgsConstructor
 public class UserResponseDto {

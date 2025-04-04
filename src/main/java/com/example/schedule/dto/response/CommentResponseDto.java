@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * 댓글 응답에 사용되는 DTO
+ */
 @Getter
 @AllArgsConstructor
 public class CommentResponseDto {
